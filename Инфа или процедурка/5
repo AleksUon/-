@@ -1,0 +1,516 @@
+- Алгоритм Евклида
+    
+    ```cpp
+    #include <iostream>
+    using namespace std;
+    
+    int main() {
+        int num1, num2;
+        cout << "Введите два числа: ";
+        cin >> num1 >> num2;
+    
+        // Находим НОД методом деления
+        int a = num1, b = num2;
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        int noddivision = a;
+    
+        // Находим НОД методом вычитания
+        while (num1 != num2) {
+            if (num1 > num2) {
+                num1 = num1 - num2;
+            } else {
+                num2 = num2 - num1;
+            }
+        }
+        int nodsubtraction = num1;
+    
+        cout << "Наибольший общий делитель (метод деления): " << noddivision << endl;
+        cout << "Наибольший общий делитель (метод вычитания): " << nodsubtraction << endl;
+    
+        return 0;
+    }
+    ```
+    
+- Решето Эратосфена
+    
+    ```cpp
+    #include <iostream>;
+    #include <fstream>;
+    #include <math.h>;
+    #include <string>;
+    #include <typeinfo>;
+    #include <limits>
+    using namespace std;
+    bool isPrime(int num) {
+     if (num <= 1) {
+      return false;
+     }
+     for (int i = 2; i * i <= num; i++) {
+      if (num % i == 0) {
+       return false;
+      }
+     }
+     return true;
+    }
+    int main() {
+     setlocale(LC_ALL, "Rus");
+     float n;
+     cout << "Натуральное число: ";
+     cin >> n;
+     if (n < 2)
+     {
+      cout << "Ошибка!!!" << endl << "\n";
+     }
+     else {
+      cout << "Числа в диапазоне от 2 до " << n << ":\n";
+      for (int i = 2; i <= n; i++) {
+       if (isPrime(i)) {
+        cout << i << " ";
+       }
+      }
+      cout << endl;
+     }
+    
+    }
+    ```
+    
+- Обработка текста по словам: вставка разделителей между словами.
+    
+    ```cpp
+    #include <iostream>
+    #include <string>
+    using namespace std;
+    
+    string insertDelimiter(const string& input, const string& delimiter) {
+        string result;
+        int n = input.length();
+        for (int i = 0; i < n; i++) {
+            if (input[i] == ' ') {
+                result += delimiter;
+            } else {
+                result += input[i];
+            }
+        }
+        return result;
+    }
+    
+    int main() {
+    	setlocale(LC_ALL, "RUS");
+        string input, delimiter;
+        cout << "Введите строку: ";
+        getline(cin, input);
+        cout << "Введите разделитель: ";
+        cin >> delimiter;
+    
+        string output = insertDelimiter(input, delimiter);
+        cout << "Результат: " << output << endl;
+    
+        return 0;
+    }
+    ```
+    
+- Статистическая обработка текстового файла: поиск наименее часто встречающейся гласной буквы.
+    
+    ```cpp
+    #include <iostream>
+    #include <fstream>
+    #include <string>
+    #include <map>
+    #include <algorithm>
+    
+    using namespace std;
+    
+    bool isVowel(char c) {
+        c = tolower(c);
+        return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
+    }
+    
+    int main() {
+    	setlocale(LC_ALL, "RUS");
+        ofstream myfile("input.txt");
+        if (myfile.is_open()) {
+            string input;
+            cout << "Введите текст: ";
+            getline(cin, input);
+            myfile << input;
+            myfile.close();
+            
+            ifstream file("input.txt");
+            if (file.is_open()) {
+                string line;
+                map<char, int> vowelCount;
+                while (getline(file, line)) {
+                    transform(line.begin(), line.end(), line.begin(), ::tolower);
+                    for (char c : line) {
+                        if (isVowel(c)) {
+                            vowelCount[c]++;
+                        }
+                    }
+                }
+                file.close();
+                if (vowelCount.empty()) {
+                    cout << "В файле нет гласных букв." << endl;
+                } else {
+                    char leastUsedVowel = vowelCount.begin()->first;
+                    for (const auto& pair : vowelCount) {
+                        if (pair.second < vowelCount[leastUsedVowel]) {
+                            leastUsedVowel = pair.first;
+                        }
+                    }
+                    cout << "Наименее часто встречающаяся гласная в тексте: " << leastUsedVowel << endl;
+                }
+            } else {
+                cout << "Не удалось открыть файл";
+            }
+        } else {
+            cout << "Не удалось создать файл";
+        }
+        
+        return 0;
+    }
+    ```
+    
+- Дано целое число n (вводится с клавиатуры). Вычислить сумму из n слагаемых
+        
+    ```cpp
+    #include <iostream>
+    #include <cmath>
+    using namespace std;
+    
+    // Функция для вычисления факториала
+    unsigned long long factorial(int n) {
+        if (n == 0) {
+            return 1;
+        } else {
+            return n * factorial(n - 1);
+        }
+    }
+    
+    int main() {
+    	setlocale(LC_ALL, "RUS");
+        int n;
+        cout << "Введите целое число n: ";
+        cin >> n;
+    
+        if (n < 0) {
+            cout << "Ошибка: введено отрицательное число" << endl;
+            return 1;
+        }
+    
+        double sum = 0.0;
+        int factor = 1;
+        int start = 1;
+        for (int i = n; i > 0; i--) {
+            unsigned long long fact = factorial(i);
+            double term = fact / sqrt(start);
+            if (factor % 2 == 0) {
+                sum -= term;
+            } else {
+                sum += term;
+            }
+            factor++;
+            for (int j = 1; j <= i; j++) {
+                start++;
+            }
+        }
+    
+        cout << "Сумма из " << n << " слагаемых: " << sum << endl;
+    
+        return 0;
+    }
+    ```
+    
+- Задан массив F[1:n] из чисел в двоичной системе счисления. В другом массиве организовать перевод исходного массива в 5 систему счисления.
+    
+    ```cpp
+    #include <iostream>
+    #include <vector>
+    #include <cmath>
+    using namespace std;
+    //Проверка двоичных чисел
+    bool isValidBinaryNumber(int num) {
+        while (num != 0) {
+            int digit = num % 10;
+            if (digit != 0 && digit != 1) {
+                return false;
+            }
+            num /= 10;
+        }
+        return true;
+    }
+    //преобразование в 5 систему счисления
+    vector<int> convertToBase5(vector<int>& arr) {
+        vector<int> base5Arr;
+        for (int num : arr) {
+            int base10Num = 0;
+            int power = 0;
+            while (num != 0) {
+                int digit = num % 10;
+                base10Num += digit * pow(2, power);
+                num /= 10;
+                power++;
+            }
+            base5Arr.push_back(base10Num);
+        }
+        return base5Arr;
+    }
+    
+    int main() {
+        setlocale(LC_ALL, "RUS");
+        int n;
+        cout << "Введите размер массива: ";
+        cin >> n;
+        if (n <= 0) { //массив может быть только положительного размера
+            cerr << "Ошибка в размере массива!" << endl;
+            return 1;
+        }
+    
+        vector<int> binaryArr(n);
+        cout << "Введите элементы массива через пробел (двоичные числа): ";
+        for (int i = 0; i < n; i++) {
+            cin >> binaryArr[i]; //ввод двоичных чисел
+            if (!isValidBinaryNumber(binaryArr[i])) { //проверка чисел
+                cerr << "Ошибка в числе!" << endl;
+                return 1;
+            }
+        }
+    		//преобразование в 5 систему счисления
+        vector<int> base5Arr = convertToBase5(binaryArr);
+        cout << "Числа массива в 5 системе счисления: ";
+        for (int num : base5Arr) {
+            cout << num << " ";
+        }
+        cout << endl;
+    
+        return 0;
+    }
+    ```
+    
+- Ввести в файл 4 целочисленных матриц порядка 8x8. В другом файле получить эти матрицы в транспонированном виде. В третьем файле для каждой матрицы найти сумму элементов в каждой строке и отсортировать каждую матрицу по уменьшению сумм элементов в строке.
+    
+    ```cpp
+    #include <iostream>
+    #include <fstream>
+    #include <vector>
+    #include <algorithm>
+    
+    using namespace std;
+    
+    int main() {
+    	setlocale(LC_ALL, "RUS");
+        // Создание и ввод матриц в файл
+        ofstream matrixFile("matrix.txt");
+        for (int k = 0; k < 4; k++) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    matrixFile << i * j + k << " ";
+                }
+                matrixFile << endl;
+            }
+            matrixFile << endl;
+        }
+        matrixFile.close();
+    
+        // Получение транспонированных матриц
+        ifstream input("matrix.txt");
+        ofstream transposedFile("transposed.txt");
+        for (int k = 0; k < 4; k++) {
+            vector<vector<int>> matrix(8, vector<int>(8));
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    input >> matrix[i][j];
+                }
+            }
+    
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    transposedFile << matrix[j][i] << " ";
+                }
+                transposedFile << endl;
+            }
+            transposedFile << endl;
+        }
+        input.close();
+        transposedFile.close();
+    
+        // Нахождение суммы элементов в строке и сортировка матриц
+        ifstream transposedInput("transposed.txt");
+        for (int k = 0; k < 4; k++) {
+            vector<vector<int>> transposedMatrix(8, vector<int>(8));
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    transposedInput >> transposedMatrix[i][j];
+                }
+            }
+    
+            vector<pair<int, int>> sumIndex;
+            for (int i = 0; i < 8; i++) {
+                int sum = 0;
+                for (int j = 0; j < 8; j++) {
+                    sum += transposedMatrix[i][j];
+                }
+                sumIndex.push_back(make_pair(sum, i));
+            }
+    
+            sort(sumIndex.begin(), sumIndex.end(), greater<pair<int, int>>());
+            cout << "Матрица " << k + 1 << ", отсортированная по убывающей сумме элементов в строке: " << endl;
+            for (const auto& pair : sumIndex) {
+                for (int j = 0; j < 8; j++) {
+                    cout << transposedMatrix[pair.second][j] << " ";
+                }
+                cout << endl;
+            }
+        }
+        transposedInput.close();
+    
+        return 0;
+    }
+    ```
+    
+
+_____________________________________________________________________________________________________
+
+- Написать программу, которая подсчитывает количество возрастающих последовательностей во введенном с клавиатуры массиве чисел
+    
+    ```cpp
+    #include <iostream>
+    #include <vector>
+    #include <cctype>
+    using namespace std;
+    
+    int main() {
+        setlocale(LC_ALL, "RUS");
+    
+        int n;
+    
+        cout << "Введите размер массива: ";
+        cin >> n;
+    
+        if (cin.fail() || n < 0) {
+            cerr << "Ошибка: Размер массива должен быть положительным числом" << endl;
+            return 1;
+        }
+    
+        vector<int> arr;
+        int input;
+    
+        cout << "Введите элементы массива: ";
+        for (int i = 0; i < n; i++) {
+            if (!(cin >> input)) {
+                cerr << "Ошибка: Необходимо вводить только числа" << endl;
+                return 1;
+            }
+            arr.push_back(input);
+        }
+    
+        int count = 0;
+        int len = 1;
+    
+        for (int i = 1; i < arr.size(); i++) {
+            if (arr[i] > arr[i - 1]) {
+                len++;
+            }
+            else {
+                count += (len * (len - 1)) / 2;
+                len = 1;
+            }
+        }
+    
+        count += (len * (len - 1)) / 2;
+    
+        cout << "Количество возрастающих последовательностей: " << count;
+    
+        return 0;
+    }
+    ```
+    
+- Написать программу подведения итогов Олимпийский игр. В программу пользователь должен ввести количество медалей разного достоинства, завоевание каждой командой-участницей, подсчитать общее число медалей и соответствующее число очков, в соответствии с набранным количеством очков, которое определяется по следующему правилу: за золотую медаль команда получает 7 очков, за серебряную - 6, за бронзовую - 5. Вся информация должна быть сохранена в файле, где одной записью будут являться все данные по одной стране. Отсортировать файл по количеству золотых медалей и вывести всю информацию на экран
+
+
+    ```cpp
+    #include <iostream>
+    #include <fstream>
+    #include <vector>
+    #include <algorithm>
+    using namespace std;
+    
+    struct Country {
+        string name;
+        int gold;
+        int silver;
+        int bronze;
+        int totalMedals;
+        int totalPoints;
+    };
+    
+    int main() {
+    	setlocale(LC_ALL, "RUS");
+        vector<Country> countries;
+    
+        int numCountries;
+        cout << "Введите количество стран: ";
+        cin >> numCountries;
+    
+        if (numCountries <= 0) {
+            cout << "Ошибка: введено некорректное количество стран" << endl;
+            return 1;
+        }
+    
+        for (int i = 0; i < numCountries; i++) {
+            Country country;
+            cout << "Введите название страны: ";
+            cin >> country.name;
+            cout << "Введите количество золотых медалей: ";
+            cin >> country.gold;
+            if (country.gold < 0) {
+                cout << "Ошибка: количество золотых медалей не может быть отрицательным" << endl;
+                return 1;
+            }
+            cout << "Введите количество серебряных медалей: ";
+            cin >> country.silver;
+            if (country.silver < 0) {
+                cout << "Ошибка: количество серебряных медалей не может быть отрицательным" << endl;
+                return 1;
+            }
+            cout << "Введите количество бронзовых медалей: ";
+            cin >> country.bronze;
+            if (country.bronze < 0) {
+                cout << "Ошибка: количество бронзовых медалей не может быть отрицательным" << endl;
+                return 1;
+            }
+    
+            country.totalMedals = country.gold + country.silver + country.bronze;
+            country.totalPoints = country.gold * 7 + country.silver * 6 + country.bronze * 5;
+    
+            countries.push_back(country);
+        }
+    
+        // Сортируем страны по количеству золотых медалей
+        sort(countries.begin(), countries.end(), [](const Country &a, const Country &b) {
+            return a.gold > b.gold;
+        });
+    
+        // Записываем информацию в файл
+        ofstream outFile("olympic_results.txt");
+        if (outFile.is_open()) {
+            for (const auto &country : countries) {
+                outFile << "Страна: " << country.name << ", Золотые: " << country.gold << ", Серебряные: " << country.silver << ", Бронзовые: " << country.bronze << ", Общее количество медалей: " << country.totalMedals << ", Общее количество очков: " << country.totalPoints << endl;
+            }
+            outFile.close();
+        } else {
+            cout << "Ошибка открытия файла для записи" << endl;
+            return 1;
+        }
+    
+        // Выводим информацию на экран
+        for (const auto &country : countries) {
+            cout << "Страна: " << country.name << ", Золотые: " << country.gold << ", Серебряные: " << country.silver << ", Бронзовые: " << country.bronze << ", Общее количество медалей: " << country.totalMedals << ", Общее количество очков: " << country.totalPoints << endl;
+        }
+    
+        return 0;
+    }
+    ```
