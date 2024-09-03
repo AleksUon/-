@@ -1,0 +1,541 @@
+- 99
+    
+    ```cpp
+    #include <iostream>
+    #include <cstdlib>
+    #include <ctime>
+    #include <vector>
+    #include <string>
+    
+    using namespace std;
+    
+    //Рандомайзер без повторений
+    int generateRandomNumber() {//создаём генератор рандомных чисел
+        srand(time(0));
+        vector<int> digits = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};//числа из которых можно генерировать
+        random_shuffle(digits.begin(), digits.end());
+    
+        int number = 0;
+        for (int i = 0; i < 4; i++) {
+            number = number * 10 + digits[i];
+        }
+    
+        return number;
+    }
+    
+    // плюсы и минусы
+    void getScore(int secretNumber, int guess, int& bulls, int& cows) {
+        bulls = 0;
+        cows = 0;
+    
+        string secretStr = to_string(secretNumber);//задуманное число
+        string guessStr = to_string(guess);//предложенное пользователем число
+    
+        for (int i = 0; i < 4; i++) {
+            if (secretStr[i] == guessStr[i]) {//сравнение чисел, если число совпадает, то +, если нет, но оно есть в числе то -
+                bulls++;
+            } else if (secretStr.find(guessStr[i]) != string::npos) {
+                cows++;
+            }
+        }
+    }
+    
+    int main() {
+        setlocale(LC_ALL, "Rus");
+    
+        int secretNumber = generateRandomNumber();//генерируем секретное число
+        int guess, bulls, cows, attempts = 0;//задаём изначальные значения равные 0, для дальнейшей работы с ними
+    
+        cout << "Компьютер задумал четырехзначное число, попробуйте его угадать. Плюсы означают, что цифра находится на своём месте. Минус означет, что цифра присутствует в числе, но находится в другом месте." << endl;
+    
+        do {
+            cout << "Ваши догадки: ";
+            cin >> guess;//предлагаем наше число
+    
+            getScore(secretNumber, guess, bulls, cows);//используем функцию по подсчёту + и -
+            attempts++;
+    
+            cout << "Плюсы: " << bulls << ", Минусы: " << cows << endl;
+    
+        } while (bulls != 4); 
+    
+        cout << "Число угадано " << secretNumber << " за " << attempts << " попыток." << endl;
+    
+        return 0;
+    }
+    ```
+    
+- 101
+    
+    ```cpp
+    #include <iostream>
+    #include <vector>
+    #include <cstdlib>
+    #include <ctime>
+    #include <random>
+    using namespace std;
+    //FIELDSIZEX и FIELDSIZEY создают размеры поля, где животные могут перемещаться.
+    const int FIELD_SIZE_X = 100;
+    const int FIELD_SIZE_Y = 50;
+    
+    class Animal {
+    public:
+        int x, y, age;
+        char col;
+    
+        Animal(int x, int y, int age, char col) : x(x), y(y), age(age), col(col) {} //положение (x, y), возраст и тип животного.
+    
+        virtual void move() = 0; //определяет перемещение животного.
+        virtual void eat(vector<Animal*>& animals) = 0; //поведение животного при питании.
+        virtual void ageOneYear() = 0;//увеличивающая возраст животного на один год.
+    
+        virtual ~Animal() {}
+    };
+    
+    class Herbivore : public Animal { 
+    public:
+        Herbivore(int x, int y) : Animal(x, y, 0, 'H') {}//позиция травоядного
+    
+        void move() override {
+            x += rand() % 3 - 1;  // Random перемещение [-1, 1]
+            y += rand() % 3 - 1;
+        }
+    
+        void eat(vector<Animal*>& animals) override {
+            // Травоядное не ест животных
+        }
+    
+        void ageOneYear() override { //Возраст травоядного
+            age++;
+        }
+    };
+    
+    class predator : public Animal { 
+    public:
+        predator(int x, int y) : Animal(x, y, 0, 'P') {}//позиция хищника
+    
+        void move() override {
+            x += rand() % 3 - 1;  // Random перемещение [-1, 1]
+            y += rand() % 3 - 1;
+        }
+    
+        void eat(vector<Animal*>& animals) override {
+            for (auto& animal : animals) {
+                if (animal->col == 'H' && abs(x - animal->x) <= 1 && abs(y - animal->y) <= 1) {
+                    // Хищники едят травоядных
+                    delete animal;
+                    animal = nullptr;
+                    break;  // Можно съесть только одного
+                }
+            }
+            animals.erase(remove(animals.begin(), animals.end(), nullptr), animals.end());
+        }
+    
+        void ageOneYear() override { //Возраст хищника
+            age++;
+        }
+    };
+    
+    class Environment {
+    public:
+        vector<Animal*> animals;
+        int grassCount;
+        double grassRegrowthRate;
+        double predationProbability;
+        mt19937 gen; //генерация случайных чисел. Работает лучше чем rand
+    
+        Environment(int grassCount, double grassRegrowthRate, double predationProbability) //количество травы, скорость роста и вероятность хищничества.
+            : grassCount(grassCount), grassRegrowthRate(grassRegrowthRate), predationProbability(predationProbability), gen(time(0)) {} //используется текущее время (time(0)),что обеспечивает различные случайные последовательности на разных запусках программы.
+    
+        void initializeHerbivores(int count) { //Создает заданное количество травоядных и добавляет их в вектор животных с случайными координатами.
+            for (int i = 0; i < count; ++i) {
+                animals.push_back(new Herbivore(gen() % FIELD_SIZE_X, gen() % FIELD_SIZE_Y)); //делает случайное размещение травоядного на поле
+            }
+        }
+    
+        void initializepredator(int count) { //Создает заданное количество хищников и добавляет их в вектор животных с случайными координатами.
+            for (int i = 0; i < count; ++i) {
+                animals.push_back(new predator(gen() % FIELD_SIZE_X, gen() % FIELD_SIZE_Y));//делает случайное размещение хищника на поле
+            }
+        }
+    
+        void simulateOneYear() { // Симуляция одного года в среде, с перемещением, питанием и старением животных, а также ростом травы и хищничества.
+            vector<Animal*> newAnimals;
+    
+            for (auto& animal : animals) {
+                animal->move();
+                animal->ageOneYear();
+                animal->eat(animals);
+            }
+    
+            // Трава растет
+            grassCount = static_cast<int>(grassCount * (1.0 + grassRegrowthRate));
+    
+            // Случайные события хищничества и удаление мертвых животных
+            for (auto& animal : animals) {
+                if (animal->col == 'H' && (gen() % 100) < (predationProbability * 100)) {
+                    delete animal;
+                }
+                else {
+                    newAnimals.push_back(animal);
+                }
+            }
+    
+            animals = newAnimals;
+        }
+    
+    };
+    
+    int main() {
+        setlocale(LC_ALL, "Rus");
+    
+        int grassCount, herbivoreCount, predatorCount;
+        double grassRegrowthRate, predationProbability;
+    
+        cout << "Введите количество травы, скорость роста и вероятность хищничества:" << endl;
+        cin >> grassCount >> grassRegrowthRate >> predationProbability;
+    
+        Environment environment(grassCount, grassRegrowthRate, predationProbability);
+    
+        cout << "Введите количество травоядных:" << endl;
+        cin >> herbivoreCount;
+        environment.initializeHerbivores(herbivoreCount);
+    
+        cout << "Введите количество хищников:" << endl;
+        cin >> predatorCount;
+        environment.initializepredator(predatorCount);
+    
+        int n;
+        cout << "Сколько лет будет симуляция:" << endl;
+        cin >> n;
+    
+        for (int year = 0; year < n; ++year) {
+            cout << "Год: " << year + 1 << ":\n";
+    
+            for (const auto& animal : environment.animals) {
+                cout << "Животное в (" << animal->x << ", " << animal->y << ") - Возраст: " << animal->age << " - Тип: " << animal->col << "\n";
+            }
+    
+            cout << "\n";
+    
+            environment.simulateOneYear();
+        }
+    
+        return 0;
+    }
+    ```
+    
+    ```cpp
+    #include <iostream>
+    #include <vector>
+    #include <cstdlib>
+    #include <ctime>
+    using namespace std;
+    
+    class Animal {
+    public:
+        int x, y, age;
+        char col;
+    
+        Animal(int x, int y, int age, char col) : x(x), y(y), age(age), col(col) {}
+    
+        virtual void move() = 0;
+        virtual void eat(vector<Animal*>& animals) = 0;
+        virtual void ageOneYear() = 0;
+    
+        virtual ~Animal() {}
+    };
+    
+    class Herbivore : public Animal {
+    public:
+        Herbivore(int x, int y) : Animal(x, y, 0, 'H') {}
+    
+        void move() override {
+            x += rand() % 3 - 1;  // Random перемещение [-1, 1]
+            y += rand() % 3 - 1;
+        }
+    
+        void eat(vector<Animal*>& animals) override {
+            // Herbivores не едят животных
+        }
+    
+        void ageOneYear() override {
+            age++;
+        }
+    };
+    
+    class Carnivore : public Animal {
+    public:
+        Carnivore(int x, int y) : Animal(x, y, 0, 'C') {}
+    
+        void move() override {
+            x += rand() % 3 - 1;  // Random перемещение [-1, 1]
+            y += rand() % 3 - 1;
+        }
+    
+        void eat(vector<Animal*>& animals) override {
+            for (auto& animal : animals) {
+                if (animal->col == 'H' && abs(x - animal->x) <= 1 && abs(y - animal->y) <= 1) {
+                    // Carnivore кущаем herbivore
+                    delete animal;
+                    animal = nullptr;
+                    break;  // Кушаем только одного животного за ход
+                }
+            }
+            animals.erase(remove(animals.begin(), animals.end(), nullptr), animals.end());
+        }
+    
+        void ageOneYear() override {
+            age++;
+        }
+    };
+    
+    class Environment {
+    public:
+        vector<Animal*> animals;
+        int grassCount;
+        double grassRegrowthRate;
+        double predationProbability;
+    
+        Environment(int grassCount, double grassRegrowthRate, double predationProbability)
+            : grassCount(grassCount), grassRegrowthRate(grassRegrowthRate), predationProbability(predationProbability) {
+            srand(time(nullptr));
+        }
+    
+        void initializeHerbivores(int count) {
+            for (int i = 0; i < count; ++i) {
+                animals.push_back(new Herbivore(rand() % 100, rand() % 50));
+            }
+        }
+    
+        void initializeCarnivores(int count) {
+            for (int i = 0; i < count; ++i) {
+                animals.push_back(new Carnivore(rand() % 100, rand() % 50));
+            }
+        }
+    
+        void simulateOneYear() {
+            for (auto& animal : animals) {
+                animal->move();
+                animal->ageOneYear();
+                animal->eat(animals);
+            }
+    
+            // Трава растет
+            grassCount = static_cast<int>(grassCount * (1.0 + grassRegrowthRate));
+    
+            // Случайные события хищничества
+            for (auto& animal : animals) {
+                if (animal->col == 'H' && (rand() % 100) < (predationProbability * 100)) {
+                    delete animal;
+                    animal = nullptr;
+                }
+            }
+            animals.erase(remove(animals.begin(), animals.end(), nullptr), animals.end());
+        }
+    
+        ~Environment() {
+            for (auto& animal : animals) {
+                delete animal;
+            }
+        }
+    };
+    
+    int main() {
+        setlocale(LC_ALL, "Rus");
+        Environment environment(100, 0.1, 0.05);
+        environment.initializeHerbivores(50);
+        environment.initializeCarnivores(20);
+    
+        int n;
+        cout << "Сколько лет будет симуляция:" << endl;
+        cin >> n;
+    
+        for (int year = 0; year < n; ++year) {
+            cout << "Год: " << year + 1 << ":\n";
+    
+            for (const auto& animal : environment.animals) {
+                cout << "Животное в (" << animal->x << ", " << animal->y << ") - Возраст: " << animal->age << " - Тип: " << animal->col << "\n";
+            }
+    
+            cout << "\n";
+    
+            environment.simulateOneYear();
+        }
+    
+        return 0;
+    }
+    ```
+    
+- Шарики
+    
+    ```cpp
+    #include <iostream>
+    #include <algorithm>
+    #include <vector>
+    
+    using namespace std;
+    
+    //Функция перестановки
+    void p(int m, int n, vector<int>& shar, int i, int& count) {
+        if (i == n + 1) {
+            for (int j = 1; j <= n; j++) {
+                if (shar[j] == j) {
+                    count++;
+                    break;
+                }
+            }
+            return;
+        }
+    
+        for (int j = m; j <= n; j++) {
+            swap(shar[m], shar[j]);
+            p(m + 1, n, shar, i + 1, count);
+            swap(shar[m], shar[j]);
+        }
+    }
+    //Ввод и вывод значений
+    int main() {
+        setlocale(LC_ALL, "Rus");
+        int n;
+        cout << "Введите количество шариков: ";
+        cin >> n;
+        vector<int> shar(n + 1);
+        for (int i = 1; i <= n; i++) {
+            shar[i] = i;
+        }
+    
+        int count = 0;
+        p(1, n, shar, 1, count);
+    
+        cout << "Кол-во ситуаций: " << count << endl;
+    
+        return 0;
+    }
+    ```
+    
+    ```cpp
+    #include <iostream>
+    #include <vector>
+    using namespace std;
+    
+    long long int k_ans(long long int n) {
+        if (n == 1 or n == 2)
+            return 1;
+        return (k_ans(n - 1) + k_ans(n - 2)) * (n - 1);
+    }
+    
+    // Функция для обмена значениями в массиве
+    void swap(long long int& a, long long int& b) {
+        long long int temp = a;
+        a = b;
+        b = temp;
+    }
+    
+    // Рекурсивная функция для генерации перестановок
+    void generatePermutations(vector<long long int>& arr, long long int start, vector<vector<long long int>>& result) {
+        if (start == arr.size() - 1) {
+            // Добавляем текущую перестановку в результат
+            result.push_back(arr);
+            return;
+        }
+    
+        for (long long int i = start; i < arr.size(); ++i) {
+            // Меняем местами текущий элемент с каждым из последующих
+            swap(arr[start], arr[i]);
+    
+            // Рекурсивно генерируем перестановки для подмассива
+            generatePermutations(arr, start + 1, result);
+    
+            // Возвращаем массив в исходное состояние для следующих итераций
+            swap(arr[start], arr[i]);
+        }
+    }
+    
+    // Функция для вызова генерации перестановок
+    vector<vector<long long int>> getAllPermutations(vector<long long int>& arr) {
+        vector<vector<long long int>> result;
+        generatePermutations(arr, 0, result);
+        return result;
+    }
+    
+    int main() {
+        setlocale(LC_ALL, "Rus");
+        while (true) {
+            long long int n;
+            cout << "Введите кол-во шариков в коробке: ";
+            cin >> n;
+            vector<long long int> input;
+            for (long long int i = 0; i < n; ++i)
+                input.push_back(i + 1);
+            long long int count = 0; // Счетчик соответствий номера шарика и порядка его вытаскивания
+    
+            vector<vector<long long int>> permutations = getAllPermutations(input);
+            // Выводим все перестановки
+            for (const auto& perm : permutations) {
+                vector<long long int> tmp;
+                for (long long int num : perm)
+                    tmp.push_back(num);
+                for (long long int i = 0; i < tmp.size(); ++i) {
+                    if (tmp[i] == i + 1) {
+                        count += 1;
+                        break;
+                    }
+                }
+            }
+    
+            if (k_ans(n) == count)
+                cout << count << endl;
+            else
+                cout << "Error " << count << " != " << k_ans(n) << endl;
+        }
+        return 0;
+    }
+    ```
+    
+    ```cpp
+    #include <iostream>
+    #include <vector>
+    using namespace std;
+    //обмен значениями между двумя переменными
+    void swap(int& a, int& b) {
+        int temp = a;
+        a = b;
+        b = temp;
+    }
+    //рекурсивно генерирует все перестановки элементов вектора arr и подсчитывает количество перестановок, в которых элементы совпадают с индексами
+    void generatePermutations(vector<int>& arr, int start, int n, int& count) {
+        if (start == n) {
+            for (int i = 0; i < n; ++i) {
+                if (arr[i] == i + 1) {
+                    count++; //хранение количества перестановок
+                    break;
+                }
+            }
+            return;
+        }
+    
+        for (int i = start; i < n; ++i) {
+            swap(arr[start], arr[i]);
+            generatePermutations(arr, start + 1, n, count);
+            swap(arr[start], arr[i]);
+        }
+    }
+    //все перестановки чисел от 1 до n и подсчитывает количество перестановок
+    int main() {
+        int n;
+        cout << "Введите количество шариков: ";
+        cin >> n;
+    
+        vector<int> balls(n); //Создание вектора balls размером n и заполнение его числами от 1 до n
+        for (int i = 0; i < n; ++i)
+            balls[i] = i + 1;
+    
+        int count = 0;
+        generatePermutations(balls, 0, n, count); //Вызов функции generatePermutations для генерации перестановок и подсчета количества удовлетворяющих перестановок.
+    
+        cout << "Общее количество ситуаций: " << count << endl;
+    
+        return 0;
+    }
+    ```
