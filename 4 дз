@@ -1,0 +1,549 @@
+- «Файл»
+    
+    ```cpp
+    #include <iostream>
+    #include <fstream>
+    using namespace std;
+    int main() {
+        ofstream outputFile("n.txt");
+    
+        if (!outputFile) {
+            cout << "Ошибка открытия файла." << endl;
+            return 1;
+        }
+    
+        cout << "Введите 10 чисел:" << endl;
+        for (int i = 0; i < 10; ++i) {
+            int n;
+            cin >> n;
+            outputFile << n << endl;
+        }
+    
+        outputFile.close();
+    
+        ifstream inputFile("n.txt");
+    
+        if (!inputFile) {
+            cout << "Ошибка открытия файла." << endl;
+            return 1;
+        }
+    
+        int sum = 0;
+        int n;
+        while (inputFile >> n) {
+            sum += n;
+        }
+    
+        inputFile.close();
+    
+        cout << "Сумма чисел: " << sum << endl;
+    
+        return 0;
+    }
+    ```
+    
+- «Знак числа»
+    
+    ```cpp
+    #include <iostream>
+    using namespace std;
+    int getSign(int number) {
+        if (number > 0) {
+            return 1;
+        } else if (number < 0) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+    
+    int main() {
+        int number;
+    
+        cout << "Введите число: ";
+        cin >> number;
+    
+        int sign = getSign(number);
+    
+        cout << "Знак числа: " << sign << endl;
+    
+        return 0;
+    }
+    ```
+    
+- «Геометрические фигуры»
+    
+    ```cpp
+    #include <iostream>
+    #include <cmath>
+    using namespace std;
+    
+    double calculateRectangleArea(double length, double width) {
+        return length * width;
+    }
+    
+    double calculateTriangleArea(double base, double height) {
+        return 0.5 * base * height;
+    }
+    
+    double calculateCircleArea(double radius) {
+        return 3.14 * pow(radius, 2);
+    }
+    
+    int main() {
+        int choice;
+        cout << "Выберите фигуру для расчета площади: " << endl;
+        cout << "1. Прямоугольник" << endl;
+        cout << "2. Треугольник" << endl;
+        cout << "3. Круг" << endl;
+        cin >> choice;
+    
+        double area;
+    
+        switch (choice) {
+            case 1: {
+                double length, width;
+                cout << "Введите длину и ширину прямоугольника: ";
+                cin >> length >> width;
+                area = calculateRectangleArea(length, width);
+                break;
+            }
+            case 2: {
+                double base, height;
+                cout << "Введите основание и высоту треугольника: ";
+                cin >> base >> height;
+                area = calculateTriangleArea(base, height);
+                break;
+            }
+            case 3: {
+                double radius;
+                cout << "Введите радиус круга: ";
+                cin >> radius;
+                area = calculateCircleArea(radius);
+                break;
+            }
+            default: {
+                cout << "Неверный выбор." << endl;
+                return 1;
+            }
+        }
+    
+        cout << "Площадь выбранной фигуры: " << area << endl;
+    
+        return 0;
+    }
+    ```
+    
+- «Былая слава».
+    
+    ```cpp
+    void hw4_ex4()
+    {
+        for (int i = 0; i < 4; i++) 
+        {
+            for (int j = 0; j < 12; j++)
+            {
+                cout << "*";
+            }
+            cout << setw(30) << setfill('=') << '\n';
+        }
+        for (int i = 0; i < 9; i++)
+        {
+            cout << setw(42) << setfill('=') << '\n';
+        }
+    }
+    ```
+    
+    ```cpp
+    #include <iostream>
+    using namespace std;
+    int main()
+    {
+        for (int i = 0; i < 3; i++) {
+            // красная полоска
+            for (int j = 0; j < 8; j++) {
+                cout << "\033[0;97;44m* \033[0m";
+            }
+            for (int q = 0; q < 32; q++) {
+                cout << "\033[0;41m \033[0m";
+            }
+            cout << endl;
+            // белая полоска
+            for (int j = 0; j < 8; j++) {
+                cout << "\033[0;97;44m* \033[0m";
+            }
+            for (int q = 0; q < 32; q++) {
+                cout << "\033[0;107m \033[0m";
+            }
+            cout << endl;
+        
+        }
+        for (int j = 0; j < 48; j++) {
+            cout << "\033[0;41m \033[0m";
+        }
+        cout << endl;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 48; j++) {
+                cout << "\033[0;107m \033[0m";
+    
+            }
+            cout << endl;
+            for (int j = 0; j < 48; j++) {
+                cout << "\033[0;41m \033[0m";
+            }
+            cout << endl;
+        }
+    }
+    ```
+    
+    ```cpp
+    #include <iostream>
+    using namespace std;
+    int main() {
+        const int NUM_ROWS = 13;
+        const int NUM_COLUMNS = 48;
+    
+        for (int row = 0; row < NUM_ROWS; ++row) {
+            for (int column = 0; column < NUM_COLUMNS; ++column) {
+                // Выводим символы "*" для звезд
+                if (row < 5 && column < 6) {
+                    cout << "* ";
+                }
+                // Выводим символы "_" для полос
+                else {
+                    cout << "_ ";
+                }
+            }
+            cout << endl;
+        }
+    
+        return 0;
+    }
+    ```
+    
+- «Синусоида»
+    
+    ```cpp
+    #include <iostream>
+    #include <cmath>
+    using namespace std;
+    const int WIDTH = 80;
+    const int HEIGHT = 20;
+    
+    int main() {
+        // Отмечаем ось Y
+        for (int y = -HEIGHT / 2; y <= HEIGHT / 2; ++y) {
+            for (int x = -WIDTH / 2; x <= WIDTH / 2; ++x) {
+                // Выводим символ "*" для точек графика
+                double graphX = x * (2 * 3.14 / WIDTH);
+                double graphY = sin(graphX);
+                int yPixel = round(graphY * HEIGHT / 2);
+                
+                if (yPixel == y) {
+                    cout << "*";
+                }
+                // Выводим символ "|" для оси Y
+                else if (x == 0) {
+                    cout << "|";
+                }
+                // Выводим символ "-" для оси X
+                else if (y == 0) {
+                    cout << "-";
+                }
+                // Выводим пробелы для остальных точек
+                else {
+                    cout << " ";
+                }
+            }
+            cout << endl;
+        }
+    
+        return 0;
+    }
+    
+    ```
+    
+- «Автоматный распознаватель».
+    
+    ```cpp
+    #include <iostream>
+    #include <string>
+    using namespace std;
+    int getRomanValue(char symbol) {
+        switch (symbol) {
+        case 'I':
+            return 1;
+        case 'V':
+            return 5;
+        case 'X':
+            return 10;
+        case 'L':
+            return 50;
+        case 'C':
+            return 100;
+        case 'D':
+            return 500;
+        case 'M':
+            return 1000;
+        default:
+            return -1;
+        }
+    }
+    int decodeRomanNumber(const string& romanNumber) {
+        int totalValue = 0;
+        int previousValue = 0;
+        for (int i = 0; i < romanNumber.length(); i++) {
+            int currentValue = getRomanValue(romanNumber[i]);
+    
+            if (currentValue == -1) {
+                cout << "Ошибка: недопустимый символ" << endl;
+                return 0;
+            }
+    
+            if (i < romanNumber.length() - 1) {
+                int nextValue = getRomanValue(romanNumber[i + 1]);
+    
+                if (nextValue > currentValue) {
+                    if ((currentValue == 1 && (nextValue == 10 || nextValue == 5)) ||
+                        (currentValue == 10 && (nextValue == 100 || nextValue == 50)) ||
+                        (currentValue == 100 && (nextValue == 1000 || nextValue == 500))) {
+                        cout << "Ошибка: недопустимая комбинация" << endl;
+                        return 0;
+                    }
+    
+                    totalValue += (nextValue - currentValue);
+                    i++;
+                    continue;
+                }
+            }
+    
+            totalValue += currentValue;
+        }
+    
+        return totalValue;
+    }
+    
+    int main() {
+        setlocale(LC_ALL, "RUS");
+        string romanNumber;
+    
+        cout << "Введите римскую запись числа: ";
+        cin >> romanNumber;
+    
+        int decimalNumber = decodeRomanNumber(romanNumber);
+        if (decimalNumber != 0) {
+            cout << "Десятичное представление: " << decimalNumber << endl;
+        }
+    
+        return 0;
+    }
+    ```
+    
+- «Генератор псевдослучайных чисел».
+    
+    ```cpp
+    #include <iostream>
+    using namespace std;
+    void generateRandomNumbers(int m, int i, int c) {
+        int S = i;
+        for (int k = 0; k < 10; k++) {
+            S = (m * S + i) % c;
+            cout << S << " ";
+        }
+        cout << endl;
+    }
+    
+    int main() {
+        int m1 = 37, i1 = 3, c1 = 64;
+        cout << "I вариант: ";
+        generateRandomNumbers(m1, i1, c1);
+        
+        int m2 = 25173, i2 = 13849, c2 = 65537;
+        cout << "II вариант: ";
+        generateRandomNumbers(m2, i2, c2);
+    
+        return 0;
+    }
+    ```
+    
+- Задача «Умножение матриц».
+    
+    ```cpp
+    #include <iostream>
+    #include <vector>
+    
+    using namespace std;
+    
+    int main() {
+        setlocale(LC_ALL, "RUS");
+        // Ввод таблицы A - количество проданных товаров
+        vector<vector<int>> A(3, vector<int>(4));
+        cout << "Введите количество проданных товаров для каждого продавца:" << endl;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 4; j++) {
+                cin >> A[i][j];
+            }
+        }
+    
+        // Ввод таблицы B - цены и комиссионные
+        vector<vector<int>> B(4, vector<int>(2));
+        cout << "Введите цену и комиссионные для каждого товара:" << endl;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 2; j++) {
+                cin >> B[i][j];
+            }
+        }
+    
+        // Умножение матриц A и B
+        vector<vector<int>> C(3, vector<int>(2));
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 2; j++) {
+                for (int k = 0; k < 4; k++) {
+                    C[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+    
+        // Определение максимальной и минимальной выручки продавцов
+        int maxRevenue = C[0][0], minRevenue = C[0][0];
+        int maxSellerIndex = 0, minSellerIndex = 0;
+        for (int i = 0; i < 3; i++) {
+            if (C[i][0] > maxRevenue) {
+                maxRevenue = C[i][0];
+                maxSellerIndex = i;
+            }
+            if (C[i][0] < minRevenue) {
+                minRevenue = C[i][0];
+                minSellerIndex = i;
+            }
+        }
+    
+        // Определение продавца с наибольшими и наименьшими комиссионными
+        int maxCommission = C[0][1], minCommission = C[0][1];
+        int maxCommissionIndex = 0, minCommissionIndex = 0;
+        for (int i = 0; i < 3; i++) {
+            if (C[i][1] > maxCommission) {
+                maxCommission = C[i][1];
+                maxCommissionIndex = i;
+            }
+            if (C[i][1] < minCommission) {
+                minCommission = C[i][1];
+                minCommissionIndex = i;
+            }
+        }
+    
+        // Расчет общей суммы денег, вырученных за проданные товары
+        int totalRevenue = 0;
+        for (int i = 0; i < 3; i++) {
+            totalRevenue += C[i][0];
+        }
+    
+        // Расчет общей суммы комиссионных
+        int totalCommission = 0;
+        for (int i = 0; i < 3; i++) {
+            totalCommission += C[i][1];
+        }
+    
+        // Расчет общей суммы денег, прошедших через руки продавцов
+        int totalMoney = totalRevenue + totalCommission;
+    
+        // Вывод результатов
+        cout << "1) Продавец " << maxSellerIndex + 1 << " выручил больше всего денег с продажи." << endl;
+        cout << "   Продавец " << minSellerIndex + 1 << " выручил меньше всего денег с продажи." << endl;
+    
+        cout << "2) Продавец " << maxCommissionIndex + 1 << " получил наибольшие комиссионные." << endl;
+        cout << "   Продавец " << minCommissionIndex + 1 << " получил наименьшие комиссионные." << endl;
+    
+        cout << "3) Общая сумма денег, вырученных за проданные товары: " << totalRevenue << endl;
+    
+        cout << "4) Всего комиссионных получено продавцами: " << totalCommission << endl;
+    
+        cout << "5) Общая сумма денег, прошедших через руки продавцов: " << totalMoney << endl;
+    
+        return 0;
+    }
+    ```
+    
+- Задача «Системы счисления».
+    
+    ```cpp
+    #include <iostream>
+    #include <string>
+    #include <cmath>
+    
+    using namespace std;
+    
+    int charToNum(char c) {
+        if (c >= '0' && c <= '9') {
+            return c - '0';
+        }
+        else if (c >= 'A' && c <= 'F') {
+            return c - 'A' + 10;
+        }
+        else if (c >= 'a' && c <= 'f') {
+            return c - 'a' + 10;
+        }
+        else {
+            return -1;
+        }
+    }
+    
+    char numToChar(int num) {
+        if (num >= 0 && num <= 9) {
+            return '0' + num;
+        }
+        else if (num >= 10 && num <= 15) {
+            return 'A' + num - 10;
+        }
+        else {
+            return '?';  
+        }
+    }
+    
+    string convertNumber(const string& number, int oldBase, int newBase) {
+        long long decimalNumber = 0;
+        int power = 0;
+    
+        for (int i = number.length() - 1; i >= 0; i--) {
+            int digit = charToNum(number[i]);
+            if (digit == -1 || digit >= oldBase) {
+                cout << "Ошибка: недопустимое число или основание" << endl;
+                return "";
+            }
+            decimalNumber += digit * pow(oldBase, power);
+            power++;
+        }
+    
+        string newNumber = "";
+        while (decimalNumber > 0) {
+            int digit = decimalNumber % newBase;
+            newNumber = numToChar(digit) + newNumber;
+            decimalNumber /= newBase;
+        }
+    
+        return newNumber;
+    }
+    
+    int main() {
+        setlocale(LC_ALL, "RUS");
+        string number;
+        int oldBase, newBase;
+    
+        cout << "Введите число: ";
+        cin >> number;
+    
+        cout << "Введите старое основание: ";
+        cin >> oldBase;
+    
+        cout << "Введите новое основание: ";
+        cin >> newBase;
+    
+        string newNumber = convertNumber(number, oldBase, newBase);
+    
+        if (newNumber != "") {
+            cout << "Результат: " << newNumber << endl;
+        }
+    
+        return 0;
+    }
+    ```
