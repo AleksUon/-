@@ -1,0 +1,131 @@
+#include <iostream>
+#include <fstream>
+#include <math.h>
+#include <string>
+#include <typeinfo>
+#include <limits>
+using namespace std;
+
+void nom1() {
+    setlocale(LC_ALL, "RUS");
+    int m;
+    float p, n, S;
+    cout << "\nЗайм в рублях: ";
+    cin >> S;
+    cout << "\nПроцент: ";
+    cin >> p;
+    cout << "\nЛет: ";
+    cin >> n;
+    float r = p / 100;
+    if (12 * (pow(1 + r, n) - 1) == 0 || n >= 50)  
+        cout << "\nРешения нет" << endl;
+    else {
+        m = (S * r * pow(1 + r, n)) / (12 * (pow(1 + r, n) - 1));
+        cout << m << endl;
+    }
+}
+
+void nom2() {
+    setlocale(LC_ALL, "RUS");
+    float p, S, r, n, m, e;
+    cout << "Введите S: ";
+    cin >> S;
+    cout << "Введите n: ";
+    cin >> n;
+    cout << "Введите m: ";
+    cin >> m;
+    e = 0.05;
+    for (float p = 1; p <= 100; p++) {
+        r = p / 100;
+        float x = (S * r * pow(1 + r, n)) / (12 * (pow(1 + r, n) - 1));
+        if (abs(x - m) < e) {
+            cout << p;
+            break;
+        } else if (n >= 50) {
+            cout << "\nРешения нет" << endl;
+            break;
+        }
+    }
+}
+
+void nom3() {
+    string s, c;
+    setlocale(LC_ALL, "RUS");
+    setlocale(0, "");
+    cout << "Введите имя файла: ";
+    cin >> s;
+    cout << s << endl;
+    system("pause");
+    ofstream fout(s);
+    cout << "Введите текст: ";
+    cin >> c;
+    cout << c << endl;
+    system("pause");
+    fout << c;
+    fout.close();
+}
+
+void nom4() {
+    setlocale(0, "r");
+    char buff[40];
+    ifstream fin("История.doc");
+    if (!fin.is_open())
+        cout << "Невозможно открыть файл\n";
+    else {
+        fin >> buff;
+        cout << buff << endl;
+        fin.getline(buff, 40);
+        fin.close();
+        cout << buff << endl;
+    }
+}
+
+void nom5() {
+    string X;
+    cout << "Введите набор букв: ";
+    getline(cin, X);
+    char txt[30];
+    for (int i = 0; i < X.size() && i < 30; i++) {
+        txt[i] = X[i];
+    }
+    for (int i = 0; i < X.size(); i++) {
+        for (int j = i + 1; j < X.size(); j++) {
+            if (txt[i] > txt[j]) {
+                swap(txt[i], txt[j]);
+            }
+        }
+    }
+    for (int i = 0; i < X.size(); i++) {
+        cout << txt[i];
+    }
+    cout << endl;
+}
+
+int main() {
+    int choice;
+    cout << "Выберите номер (1, 2, 3, 4, 5): ";
+    cin >> choice;
+
+    switch(choice) {
+        case 1:
+            nom1();
+            break;
+        case 2:
+            nom2();
+            break;
+        case 3:
+            nom3();
+            break;
+        case 4:
+            nom4();
+            break;
+        case 5:
+            nom5();
+            break;
+        default:
+            cout << "Неправильный выбор!" << endl;
+            break;
+    }
+
+    return 0;
+}
